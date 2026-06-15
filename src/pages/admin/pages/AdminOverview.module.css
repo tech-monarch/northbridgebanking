@@ -1,0 +1,129 @@
+/* ─── Shared tokens ────────────────────────────────────────────────────────── */
+.page { display: flex; flex-direction: column; gap: 20px; padding-bottom: 32px; max-width: 1400px; }
+
+/* ─── Top row ─────────────────────────────────────────────────────────────── */
+.topRow { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+.greeting { font-size: 22px; font-weight: 800; color: var(--fg); letter-spacing: -0.3px; }
+.subtext { font-size: 13.5px; color: var(--fg-3); margin-top: 4px; }
+.periodTabs { display: flex; gap: 6px; }
+.periodBtn { padding: 7px 16px; border-radius: 8px; border: 1px solid var(--border); font-size: 13px; font-weight: 600; cursor: pointer; background: #fff; color: var(--fg-3); transition: all 0.15s; }
+.periodBtn:hover { background: var(--bg-3); }
+.periodBtnActive { background: var(--brand) !important; color: #fff !important; border-color: var(--brand) !important; }
+
+/* ─── KPI grid ───────────────────────────────────────────────────────────── */
+.kpiGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+.kpiCard {
+  background: var(--bg-2);
+  border-radius: 14px;
+  padding: 20px;
+  border: 1px solid #f0f2f5;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.kpiHeader { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+
+.kpiIcon {
+  width: 44px; height: 44px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.kpiIconBlue   { background: #f0f4ff; color: var(--brand); }
+.kpiIconGreen  { background: #dcfce7; color: #00c853; }
+.kpiIconRed    { background: #fee2e2; color: #ef4444; }
+.kpiIconYellow { background: #fef3c7; color: #d97706; }
+.kpiIconPurple { background: #f3e8ff; color: #7c3aed; }
+.kpiIconCyan   { background: #e0f2fe; color: #0891b2; }
+
+.kpiBadge { font-size: 11px; font-weight: 700; border-radius: 6px; padding: 3px 8px; }
+.badgeGreen  { background: #dcfce7; color: #15803d; }
+.badgeRed    { background: #fee2e2; color: #dc2626; }
+.badgeYellow { background: #fef3c7; color: #d97706; }
+
+.kpiValue { font-size: 28px; font-weight: 800; color: var(--fg); letter-spacing: -0.5px; line-height: 1.1; }
+.kpiLabel { font-size: 12.5px; color: var(--fg-3); font-weight: 500; margin-bottom: 8px; }
+
+/* ─── Cards ──────────────────────────────────────────────────────────────── */
+.twoCol { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+.card {
+  background: var(--bg-2);
+  border-radius: 14px;
+  padding: 20px;
+  border: 1px solid #f0f2f5;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+
+.cardHeader { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.cardTitle { font-size: 15px; font-weight: 700; color: var(--fg); }
+.viewAll { font-size: 13px; font-weight: 600; color: var(--brand); text-decoration: none; }
+.viewAll:hover { text-decoration: underline; }
+
+/* ─── Table ──────────────────────────────────────────────────────────────── */
+.table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.table th { text-align: left; font-size: 11.5px; font-weight: 600; color: var(--fg-3); padding: 0 0 10px; text-transform: uppercase; letter-spacing: 0.4px; }
+.table td { padding: 10px 0; border-top: 1px solid #f0f2f5; vertical-align: middle; }
+
+.userCell { display: flex; align-items: center; gap: 10px; }
+.userAvatar {
+  width: 32px; height: 32px; border-radius: 50%; background: var(--brand);
+  color: #fff; font-size: 13px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.userName { font-size: 13px; font-weight: 600; color: var(--fg); }
+.userEmail { font-size: 11.5px; color: var(--fg-3); }
+.dateCell { font-size: 12px; color: var(--fg-3); }
+.balanceCell { font-size: 13px; font-weight: 700; color: var(--fg); }
+
+.typeBadge { font-size: 11.5px; font-weight: 600; border-radius: 6px; padding: 3px 8px; }
+.typeDeposit  { background: #dcfce7; color: #15803d; }
+.typeWithdraw { background: #fee2e2; color: #dc2626; }
+
+.amountCell { font-weight: 700; font-size: 13px; }
+.amountGreen { color: #00c853; }
+.amountRed   { color: #ef4444; }
+
+.statusBadge { font-size: 11.5px; font-weight: 600; border-radius: 6px; padding: 3px 9px; }
+.statusVerified  { background: #dcfce7; color: #15803d; }
+.statusPending   { background: #fef3c7; color: #d97706; }
+.statusSuspended { background: #fee2e2; color: #dc2626; }
+
+/* ─── Quick actions ──────────────────────────────────────────────────────── */
+.quickActions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+.quickBtn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  border-radius: 10px;
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  color: var(--fg-2);
+  font-size: 13.5px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.15s;
+  cursor: pointer;
+}
+.quickBtn:hover {
+  background: var(--btn-color);
+  color: var(--fg);
+  border-color: var(--btn-color);
+}
+.quickBtn:hover .quickIcon {
+  background: rgba(255,255,255,0.2) !important;
+  color: #fff !important;
+}
+.quickIcon {
+  width: 32px; height: 32px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: all 0.15s;
+}
+
+/* ─── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 1100px) { .kpiGrid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 900px)  { .twoCol { grid-template-columns: 1fr; } }
+@media (max-width: 640px)  { .kpiGrid { grid-template-columns: 1fr; } }

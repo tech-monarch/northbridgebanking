@@ -1,0 +1,859 @@
+/* ── Page layout: deposit + widget side by side ── */
+.pageLayout {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 24px;
+  width: 100%;
+}
+
+.widgetSide {
+  flex: 1 1 0;
+  min-width: 320px;
+  position: sticky;
+  top: 24px;
+  height: calc(100vh - 48px);
+  min-height: 500px;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-2);
+}
+
+/* ── Existing styles below (unchanged) ── */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding-bottom: 40px;
+  max-width: 680px;
+  flex: 0 0 680px;
+  min-width: 0;
+}
+
+.header h1 {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--fg);
+  letter-spacing: -0.6px;
+  margin-bottom: 4px;
+}
+
+.header p {
+  font-size: 13px;
+  color: var(--fg-3);
+  font-weight: 500;
+}
+
+/* Progress */
+.progressRow {
+  display: flex;
+  align-items: center;
+}
+
+.progressStep {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.progressStep:last-child {
+  flex: 0;
+}
+
+.progressDot {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--bg-3);
+  border: 2px solid var(--border-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--fg-3);
+  flex-shrink: 0;
+  transition: all 0.3s;
+}
+
+.dotActive {
+  background: var(--green);
+  border-color: var(--green);
+  color: #fff;
+  box-shadow: 0 0 0 4px rgba(34,197,94,0.2);
+}
+
+.dotDone {
+  background: var(--green-bg);
+  border-color: var(--green);
+  color: var(--green);
+}
+
+.progressLabel {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--fg-3);
+  white-space: nowrap;
+  transition: color 0.3s;
+}
+
+.progressLabelActive {
+  color: var(--fg);
+}
+
+.progressLine {
+  flex: 1;
+  height: 2px;
+  background: var(--bg-4);
+  margin: 0 8px;
+  border-radius: 2px;
+  transition: background 0.3s;
+}
+
+.lineDone {
+  background: var(--green);
+}
+
+/* Card */
+.card {
+  background: var(--bg-2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.cardTitle {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--fg);
+  letter-spacing: -0.4px;
+}
+
+.cardSubtitle {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.45);
+  margin-top: -12px;
+  line-height: 1.5;
+}
+
+.cardFooter {
+  padding-top: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.backBtn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.2s;
+  align-self: flex-start;
+}
+
+.backBtn:hover {
+  color: var(--fg);
+}
+
+.selectedCoinBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  align-self: flex-start;
+}
+
+/* Coin Grid */
+.coinGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.coinCard {
+  position: relative;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1.5px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 18px 12px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    border-color 0.2s,
+    transform 0.15s;
+  text-align: center;
+}
+
+.coinCard:hover {
+  background: rgba(255, 255, 255, 0.07);
+  transform: translateY(-2px);
+}
+
+.coinCardActive {
+  background: var(--green-bg);
+}
+
+.coinIconWrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2px;
+}
+
+.coinIcon {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.coinCardName {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--fg);
+}
+
+.coinCardSymbol {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.coinCardNetwork {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.3);
+  line-height: 1.3;
+}
+
+.coinCheck {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  font-size: 10px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+/* Amount input */
+.amountInputWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.amountInputBox {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 0 16px;
+  transition: border-color 0.2s;
+}
+
+.amountInputBox:focus-within {
+  border-color: var(--green);
+  background: rgba(34,197,94,0.04);
+}
+
+.amountInput {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--fg);
+  padding: 18px 0;
+  font-family: "Inter", sans-serif;
+  letter-spacing: -0.5px;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.amountInput::-webkit-outer-spin-button,
+.amountInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+.amountInput::placeholder {
+  color: rgba(255, 255, 255, 0.15);
+}
+
+.amountSymbol {
+  font-size: 16px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.quickAmounts {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.quickAmt {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  transition:
+    background 0.18s,
+    color 0.18s,
+    border-color 0.18s;
+}
+
+.quickAmt:hover {
+  background: rgba(34,197,94,0.1);
+  border-color: rgba(34,197,94,0.3);
+  color: var(--green);
+}
+
+/* Info / Warning */
+.infoBox {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: rgba(30, 136, 229, 0.08);
+  border: 1px solid rgba(30, 136, 229, 0.2);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.5;
+}
+
+.infoBox svg {
+  flex-shrink: 0;
+  color: var(--brand);
+  margin-top: 1px;
+}
+
+.warningBox {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: rgba(255, 152, 0, 0.07);
+  border: 1px solid rgba(255, 152, 0, 0.2);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.5;
+}
+
+.warningBox svg {
+  flex-shrink: 0;
+  color: #f59e0b;
+  margin-top: 1px;
+}
+
+.warningBox strong {
+  color: #f59e0b;
+}
+
+/* QR */
+.qrWrap {
+  display: flex;
+  justify-content: center;
+  padding: 8px 0;
+}
+
+.qrCode {
+  position: relative;
+  background: #0a0e1a;
+  border: 2px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qrCoinLabel {
+  position: absolute;
+  font-size: 20px;
+  background: #0a0e1a;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Address */
+.addressBox {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.addressLabel {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.35);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.addressRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.addressCode {
+  flex: 1;
+  font-size: 12px;
+  color: var(--fg);
+  font-family: "Courier New", monospace;
+  font-weight: 600;
+  word-break: break-all;
+  line-height: 1.5;
+}
+
+.copyBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.copyBtn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--fg);
+}
+
+.copyBtnDone {
+  background: rgba(0, 200, 83, 0.12);
+  border-color: rgba(34,197,94,0.3);
+  color: var(--green);
+}
+
+/* Summary */
+.summaryBox {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.summaryRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 13px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.summaryRow:last-child {
+  border-bottom: none;
+}
+
+.summaryLabel {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.summaryValue {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 600;
+  text-align: right;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.summaryAmount {
+  color: var(--green);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.summaryAddress {
+  font-size: 11.5px;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: "Courier New", monospace;
+  font-weight: 600;
+}
+
+/* Checkbox */
+.checkRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.checkbox {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s;
+  margin-top: 1px;
+  color: #fff;
+}
+
+.checkboxChecked {
+  background: var(--green);
+  border-color: var(--green);
+}
+
+.checkLabel {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.55);
+  line-height: 1.55;
+}
+
+.checkLabel strong {
+  color: var(--fg);
+}
+
+/* Buttons */
+.btnPrimary {
+  width: 100%;
+  background: var(--green);
+  color: var(--fg);
+  border: none;
+  border-radius: 12px;
+  padding: 14px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    transform 0.15s,
+    box-shadow 0.2s;
+  box-shadow: 0 4px 16px rgba(0, 200, 83, 0.25);
+  letter-spacing: 0.2px;
+}
+
+.btnPrimary:hover:not(:disabled) {
+  background: #00b84a;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(0, 200, 83, 0.35);
+}
+
+.btnPrimary:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.btnSecondary {
+  width: 100%;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.6);
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 13px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btnSecondary:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--fg);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+/* Full card (processing / done) */
+.fullCard {
+  background: var(--bg-2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 48px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  text-align: center;
+}
+
+.processingSpinner {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 4px solid rgba(255, 255, 255, 0.08);
+  border-top-width: 4px;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.processingTitle {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--fg);
+  letter-spacing: -0.4px;
+}
+
+.processingText {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.6;
+  max-width: 380px;
+}
+
+.processingSteps {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  padding: 18px 24px;
+  width: 100%;
+  max-width: 360px;
+  text-align: left;
+}
+
+.procStep {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
+}
+
+.procDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  flex-shrink: 0;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.3;
+    transform: scale(0.7);
+  }
+}
+
+.processingNote {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.3);
+  max-width: 360px;
+  line-height: 1.6;
+}
+
+.doneRing {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  border: 2px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes popIn {
+  from {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.doneIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.doneTitle {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--fg);
+  letter-spacing: -0.5px;
+}
+
+.doneText {
+  font-size: 14px;
+  color: var(--fg-3);
+  line-height: 1.6;
+  max-width: 380px;
+}
+
+.doneDetails {
+  width: 100%;
+  max-width: 420px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.doneRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 13px;
+}
+
+.doneRow:last-child {
+  border-bottom: none;
+}
+
+.doneRow span:first-child {
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 500;
+}
+
+.doneRow span:last-child {
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 600;
+}
+
+.statusPending {
+  color: #f59e0b !important;
+}
+
+.doneActions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-width: 420px;
+}
+
+/* Responsive */
+@media (max-width: 960px) {
+  .pageLayout {
+    flex-direction: column;
+  }
+
+  .container {
+    flex: none;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .widgetSide {
+    flex: none;
+    width: 100%;
+    position: static;
+    height: 480px;
+    min-height: 400px;
+  }
+}
+
+@media (max-width: 600px) {
+  .coinGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .progressLabel {
+    display: none;
+  }
+  .card {
+    padding: 20px;
+  }
+  .fullCard {
+    padding: 36px 20px;
+  }
+  .amountInput {
+    font-size: 22px;
+  }
+  .quickAmounts {
+    gap: 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .coinGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .card {
+    padding: 16px;
+  }
+  .pageTitle {
+    font-size: 20px;
+  }
+  .amountInput {
+    font-size: 20px;
+  }
+  .quickAmounts {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .quickAmountBtn {
+    flex: 1 1 calc(50% - 6px);
+  }
+}

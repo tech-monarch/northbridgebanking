@@ -1,0 +1,87 @@
+.section {
+  padding: var(--sp-12) 0;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--sp-4);
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: var(--sp-12);
+  align-items: start;
+}
+
+.left { position: sticky; top: 100px; }
+
+.h2 {
+  font-size: clamp(22px, 2.8vw, 30px);
+  font-weight: 700;
+  color: var(--fg);
+  letter-spacing: -0.025em;
+  margin-top: var(--sp-2);
+  margin-bottom: var(--sp-3);
+}
+
+.body { font-size: 14px; color: var(--fg-2); line-height: 1.62; }
+
+.link { color: var(--brand); font-weight: 500; }
+.link:hover { opacity: 0.75; }
+
+.right { border-top: 1px solid var(--border); }
+
+.item  { border-bottom: 1px solid var(--border); }
+
+.q {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-4) 0;
+  font-size: 14.5px;
+  font-weight: 500;
+  color: var(--fg-2);
+  text-align: left;
+  cursor: pointer;
+  background: none;
+  transition: color 0.18s;
+}
+.q:hover { color: var(--fg); }
+.itemOpen .q { color: var(--fg); }
+
+.chevron {
+  flex-shrink: 0;
+  color: var(--fg-3);
+  transition: transform 0.25s ease, color 0.18s;
+}
+.chevronOpen { transform: rotate(180deg); color: var(--brand); }
+
+/* CSS grid accordion — smooth, no JS height */
+.answer {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.3s ease;
+}
+.answerOpen { grid-template-rows: 1fr; }
+
+/* The direct child MUST have overflow:hidden for grid-template-rows trick */
+.answerInner {
+  overflow: hidden;
+}
+
+.answerInner p {
+  font-size: 14px;
+  color: var(--fg-2);
+  line-height: 1.68;
+  padding-bottom: var(--sp-4);
+  max-width: 560px;
+}
+
+@media (max-width: 768px) {
+  .container { grid-template-columns: 1fr; gap: var(--sp-6); }
+  .left      { position: static; }
+  .section   { padding: var(--sp-8) 0; }
+}

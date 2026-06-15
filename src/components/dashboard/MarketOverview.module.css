@@ -1,0 +1,151 @@
+.card {
+  background: var(--bg-2);
+  border-radius: var(--r-lg);
+  padding: 20px;
+  border: 1px solid var(--border);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--fg);
+  letter-spacing: -0.2px;
+}
+
+/* Table using divs */
+.table {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.tableHead {
+  display: grid;
+  grid-template-columns: 1.6fr 1.2fr 0.7fr 0.9fr 0.7fr;
+  gap: 0;
+  padding: 0 8px 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.tableHead span {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.tableRow {
+  display: grid;
+  grid-template-columns: 1.6fr 1.2fr 0.7fr 0.9fr 0.7fr;
+  gap: 0;
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+  transition: background 0.12s;
+  border-radius: var(--r-xs);
+}
+
+.tableRow:last-child {
+  border-bottom: none;
+}
+
+.tableRow:hover {
+  background: var(--glass);
+}
+
+/* Cells */
+.coinCell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.coinIcon {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+  border: 1px solid var(--border-2);
+}
+
+.coinName {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fg);
+  line-height: 1.2;
+}
+
+.coinSymbol {
+  font-size: 11px;
+  color: var(--fg-3);
+  font-weight: 500;
+}
+
+.priceCell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.price {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.changeCell {
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.positive { color: var(--green); }
+.negative { color: #ef4444; }
+
+.capCell {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--fg-2);
+}
+
+.sparkCell {
+  display: flex;
+  align-items: center;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .tableHead,
+  .tableRow {
+    grid-template-columns: 1.6fr 1.2fr 0.7fr 0.7fr;
+  }
+  .tableHead span:nth-child(4),
+  .capCell {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .tableHead,
+  .tableRow {
+    grid-template-columns: 1.4fr 1.1fr 0.7fr;
+  }
+  .tableHead span:nth-child(5),
+  .sparkCell {
+    display: none;
+  }
+}

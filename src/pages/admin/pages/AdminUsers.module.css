@@ -1,0 +1,19 @@
+.page { display: flex; flex-direction: column; gap: 16px; padding-bottom: 32px; }
+.headerRow { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+.statsRow { display: flex; gap: 12px; flex-wrap: wrap; }
+.statCard { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 14px 18px; min-width: 120px; }
+.statNum { font-size: 22px; font-weight: 700; }
+.statLabel { font-size: 12px; color: var(--fg-3); margin-top: 2px; }
+.card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; overflow: hidden; }
+.filtersRow { display: flex; gap: 10px; padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,0.06); flex-wrap: wrap; align-items: center; }
+.searchBox { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 8px 12px; flex: 1; min-width: 180px; color: var(--fg-3); }
+.searchInput { background: none; border: none; color: #e5e7eb; font-size: 13px; outline: none; flex: 1; }
+.searchInput::placeholder { color: var(--fg-3); }
+.tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+.tab { padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; font-size: 12px; background: rgba(255,255,255,0.04); color: var(--fg-3); }
+.tabActive { background: var(--brand); color: #fff; }
+.tableWrap { overflow-x: auto; }
+.tableHead { display: grid; grid-template-columns: 1.5fr 120px 100px 100px 100px 200px; gap: 12px; padding: 10px 16px; border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 11px; color: var(--fg-3); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; min-width: 800px; }
+.tableRow { display: grid; grid-template-columns: 1.5fr 120px 100px 100px 100px 200px; gap: 12px; padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.04); align-items: center; min-width: 800px; }
+.tableRow:hover { background: rgba(255,255,255,0.015); }
+.tableRow:last-child { border-bottom: none; }

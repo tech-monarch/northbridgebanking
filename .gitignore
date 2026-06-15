@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+North Bridge Backend/
+
+# Build output
+dist/
+build/
+
+# Vite
+.vite/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# TypeScript
+*.tsbuildinfo
+
+# IDE
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Coverage
+coverage/
+
+# Cache
+.eslintcache
+.cache/
+
+# Optional (if using testing tools)
+cypress/videos/
+cypress/screenshots/

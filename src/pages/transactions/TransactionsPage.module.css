@@ -1,0 +1,591 @@
+/* ─── Page layout ────────────────────────────────────────────────────────── */
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-bottom: 32px;
+  max-width: 1200px;
+}
+
+/* ─── Page header ────────────────────────────────────────────────────────── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pageTitle {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--fg);
+  letter-spacing: -0.5px;
+}
+
+/* ─── Stats row ──────────────────────────────────────────────────────────── */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 1200px) {
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.statCard {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--bg-2);
+  border-radius: 14px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  
+}
+
+.statIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.statIconBlue {
+  background: var(--brand-dim);
+  color: var(--brand);
+}
+.statIconGreen {
+  background: var(--green-bg);
+  color: var(--green);
+}
+.statIconRed {
+  background: rgba(239,68,68,0.10);
+  color: #ef4444;
+}
+.statIconYellow {
+  background: rgba(234,179,8,0.10);
+  color: #eab308;
+}
+
+.statLabel {
+  font-size: 12px;
+  color: var(--fg-3);
+  font-weight: 500;
+}
+.statValue {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--fg);
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+}
+
+/* ─── Main card ──────────────────────────────────────────────────────────── */
+.card {
+  background: var(--bg-2);
+  border-radius: 14px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  
+  overflow: hidden;
+}
+
+/* ─── Filters row ────────────────────────────────────────────────────────── */
+.filtersRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* ─── Tab filters (used as .tabs + .tab + .tabActive in JSX) ─────────────── */
+.tabs {
+  display: flex;
+  gap: 6px;
+}
+
+.tab {
+  padding: 7px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--bg-2);
+  color: var(--fg-3);
+  transition:
+    background 0.15s,
+    color 0.15s,
+    border-color 0.15s;
+}
+.tab:hover {
+  background: var(--bg-3);
+}
+.tabActive {
+  background: var(--brand) !important;
+  color: #fff !important;
+  border-color: var(--brand) !important;
+}
+
+/* Keep legacy names as aliases in case used elsewhere */
+.typeFilters { display: flex; gap: 6px; }
+.filterBtn { padding: 7px 16px; border-radius: 8px; border: 1px solid var(--border); font-size: 13px; font-weight: 600; cursor: pointer; background: var(--bg-2); color: var(--fg-3); transition: background 0.15s, color 0.15s, border-color 0.15s; }
+.filterBtn:hover { background: var(--bg-3); }
+.filterBtnActive { background: var(--brand) !important; color: #fff !important; border-color: var(--brand) !important; }
+
+.rightFilters {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.select {
+  padding: 7px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--fg-2);
+  background: var(--bg-2);
+  cursor: pointer;
+  outline: none;
+}
+
+.searchBox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 7px 12px;
+  color: var(--fg-3);
+}
+
+.searchInput {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 13px;
+  color: var(--fg-2);
+  width: 140px;
+}
+
+.searchInput::placeholder {
+  color: var(--fg-3);
+}
+
+.exportBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-2);
+  color: var(--fg-2);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.exportBtn:hover {
+  background: var(--bg-3);
+}
+
+/* ─── Table ──────────────────────────────────────────────────────────────── */
+.tableWrap {
+  overflow-x: auto;
+}
+
+/* Table head row (flex row of column labels) */
+.tableHead {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1.4fr 1fr 0.8fr 1fr;
+  padding: 0 10px 10px;
+  border-bottom: 1px solid var(--border);
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--fg-3);
+  white-space: nowrap;
+  gap: 8px;
+}
+
+/* Table data row */
+.tableRow {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1.4fr 1fr 0.8fr 1fr;
+  align-items: center;
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--bg-3);
+  cursor: pointer;
+  transition: background 0.1s;
+  gap: 8px;
+}
+.tableRow:hover {
+  background: var(--bg-3);
+}
+
+/* Legacy table element names kept as aliases */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.th {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--fg-3);
+  text-align: left;
+  padding: 0 10px 10px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.tr {
+  border-bottom: 1px solid var(--bg-3);
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.tr:hover {
+  background: var(--bg-3);
+}
+.td {
+  padding: 12px 10px;
+  vertical-align: middle;
+}
+
+/* ─── Cells ──────────────────────────────────────────────────────────────── */
+.txId {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--brand);
+}
+
+.typeCell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.typeIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #fff;
+}
+.typeIconGreen {
+  background: var(--green);
+}
+.typeIconRed {
+  background: #ef4444;
+}
+.typeIconBlue {
+  background: var(--brand);
+}
+
+.typeLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fg);
+  text-transform: capitalize;
+}
+
+/* Asset / coin badge */
+.assetBadge {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 800;
+  color: #fff;
+}
+
+/* Legacy alias */
+.coinBadge {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.coinBadge span {
+  font-size: 10px;
+  font-weight: 800;
+  color: #fff;
+}
+
+.assetCell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.coinName {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fg);
+}
+.coinSymbol {
+  font-size: 11px;
+  color: var(--fg-3);
+}
+
+/* Amount cell wrapper */
+.amountCell {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* Positive / negative modifiers */
+.amountPos {
+  color: var(--green);
+}
+.amountNeg {
+  color: #ef4444;
+}
+
+/* Legacy full names kept as aliases */
+.amountPositive {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--green);
+}
+.amountNegative {
+  font-size: 13px;
+  font-weight: 700;
+  color: #ef4444;
+}
+.amountUsd {
+  font-size: 11px;
+  color: var(--fg-3);
+}
+
+/* Network & status cells */
+.networkCell {
+  font-size: 12px;
+  color: var(--fg-3);
+  font-weight: 500;
+}
+
+.statusCell {
+  display: flex;
+  align-items: center;
+}
+
+.statusBadge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+.statusCompleted {
+  background: var(--green-bg);
+  color: var(--green);
+}
+.statusPending {
+  background: rgba(234,179,8,0.10);
+  color: #eab308;
+}
+.statusFailed {
+  background: rgba(239,68,68,0.10);
+  color: #ef4444;
+}
+
+/* Date cell */
+.dateCell {
+  font-size: 13px;
+  color: var(--fg);
+  font-weight: 500;
+}
+
+/* Legacy aliases */
+.dateMain {
+  font-size: 13px;
+  color: var(--fg);
+  font-weight: 500;
+}
+.dateTime {
+  font-size: 11px;
+  color: var(--fg-3);
+}
+
+.viewBtn {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 12px;
+  color: var(--brand);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.viewBtn:hover {
+  background: var(--brand-dim);
+}
+
+/* ─── Expanded row ───────────────────────────────────────────────────────── */
+.expandedTd {
+  padding: 0 10px 12px;
+}
+
+.expandedRow {
+  background: var(--bg-3);
+  border-radius: 10px;
+  padding: 14px 18px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  border: 1px solid var(--border);
+}
+
+.expandedLabel {
+  font-size: 11px;
+  color: var(--fg-3);
+  margin-bottom: 2px;
+}
+.expandedHash {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--brand);
+}
+.expandedValue {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--fg);
+}
+
+/* ─── Empty state ────────────────────────────────────────────────────────── */
+.emptyState {
+  padding: 40px;
+  text-align: center;
+  color: var(--fg-3);
+  font-size: 14px;
+}
+
+/* ─── Pagination ─────────────────────────────────────────────────────────── */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+.paginationInfo {
+  font-size: 13px;
+  color: var(--fg-3);
+}
+.paginationBtns {
+  display: flex;
+  gap: 6px;
+}
+
+.pageBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--bg-2);
+  color: var(--fg-3);
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+.pageBtnActive {
+  background: var(--brand) !important;
+  color: #fff !important;
+  border-color: var(--brand) !important;
+}
+
+/* ─── Responsive ─────────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 640px) {
+  .statsGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .filtersRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .rightFilters {
+    flex-wrap: wrap;
+  }
+}
+
+/* ── Table mobile responsiveness ────────────────────────────────── */
+@media (max-width: 900px) {
+  /* 6-col → 4-col: drop hash column (5th) and status (6th becomes 5th) */
+  .tableHead,
+  .tableRow {
+    grid-template-columns: 1.2fr 0.9fr 1.2fr 0.8fr 0.9fr;
+  }
+  /* hide hash column header/cell */
+  .tableHead > *:nth-child(5),
+  .statusCell {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .tableHead,
+  .tableRow {
+    grid-template-columns: 1fr 0.8fr 1fr 0.7fr;
+    padding: 10px 8px;
+    gap: 6px;
+  }
+  /* hide date column */
+  .tableHead > *:nth-child(4),
+  .dateCell {
+    display: none;
+  }
+  .typeLabel {
+    font-size: 12px;
+  }
+  .coinName {
+    font-size: 12px;
+  }
+  .amountCell {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .tableHead,
+  .tableRow {
+    grid-template-columns: 1fr 1fr 0.8fr;
+    padding: 10px 8px;
+  }
+  /* hide coin column — keep type, amount, status */
+  .tableHead > *:nth-child(3),
+  .coinBadge {
+    display: none;
+  }
+}

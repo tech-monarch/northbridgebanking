@@ -1,0 +1,248 @@
+/* ── Balance Hero ─────────────────────────────────────────────────────────── */
+.card {
+  background: linear-gradient(135deg, var(--bg-3) 0%, var(--bg-2) 50%, var(--bg) 100%);
+  border-radius: var(--r-xl);
+  padding: 28px 32px;
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 28px;
+  align-items: stretch;
+  margin-bottom: 20px;
+  min-height: 200px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+/* Ambient glow — matches landing hero */
+.card::before {
+  content: '';
+  position: absolute;
+  top: -60px;
+  right: -60px;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--brand-glow) 0%, transparent 65%);
+  pointer-events: none;
+}
+
+.card::after {
+  content: '';
+  position: absolute;
+  bottom: -80px;
+  left: 200px;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(34,197,94,0.07) 0%, transparent 65%);
+  pointer-events: none;
+}
+
+/* ── Left ── */
+.left {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+}
+
+.balanceLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--brand);
+}
+
+.eyeBtn {
+  background: transparent;
+  border: none;
+  color: var(--fg-3);
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  transition: color 0.15s;
+}
+
+.eyeBtn:hover {
+  color: var(--fg);
+}
+
+.balanceValue {
+  font-size: 38px;
+  font-weight: 800;
+  color: var(--fg);
+  letter-spacing: -1.5px;
+  line-height: 1;
+  margin: 2px 0;
+}
+
+.balanceSubrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.usd {
+  font-size: 13px;
+  color: var(--fg-3);
+}
+
+.badge {
+  background: var(--green-bg);
+  color: var(--green);
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: var(--r-pill);
+  letter-spacing: 0.5px;
+  border: 1px solid rgba(34,197,94,0.2);
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+
+.btnDeposit {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--green);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--r-md);
+  padding: 10px 20px;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+  text-decoration: none;
+  font-family: inherit;
+}
+
+.btnDeposit:hover {
+  background: #16a34a;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(34,197,94,0.25);
+}
+
+.btnWithdraw {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--glass);
+  color: var(--fg);
+  border: 1px solid var(--border-3);
+  border-radius: var(--r-md);
+  padding: 10px 20px;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+  text-decoration: none;
+  backdrop-filter: var(--glass-blur);
+  font-family: inherit;
+}
+
+.btnWithdraw:hover {
+  background: var(--bg-4);
+  border-color: var(--brand-ring);
+  transform: translateY(-1px);
+}
+
+/* ── Right (chart) ── */
+.right {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.timeFilters {
+  display: flex;
+  gap: 4px;
+  justify-content: flex-end;
+}
+
+.filterBtn {
+  background: transparent;
+  border: none;
+  color: var(--fg-3);
+  font-size: 11.5px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: 'Inter', sans-serif;
+}
+
+.filterBtn:hover {
+  color: var(--fg-2);
+  background: var(--glass);
+}
+
+.filterBtnActive {
+  background: var(--brand-dim) !important;
+  color: var(--brand) !important;
+  border: 1px solid var(--brand-glow);
+}
+
+.chartWrap {
+  flex: 1;
+  min-height: 120px;
+  max-height: 140px;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 1200px) {
+  .card {
+    grid-template-columns: 280px 1fr;
+  }
+  .balanceValue {
+    font-size: 32px;
+  }
+}
+
+@media (max-width: 900px) {
+  .card {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+  .right {
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+  }
+  .chartWrap {
+    min-height: 100px;
+  }
+}
+
+@media (max-width: 480px) {
+  .card {
+    padding: 20px;
+    border-radius: var(--r-lg);
+  }
+  .balanceValue {
+    font-size: 26px;
+  }
+  .actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .btnDeposit, .btnWithdraw {
+    justify-content: center;
+  }
+}

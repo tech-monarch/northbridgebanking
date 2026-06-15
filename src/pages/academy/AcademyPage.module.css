@@ -1,0 +1,282 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding-bottom: 40px;
+}
+
+/* Hero */
+.hero {
+  background: linear-gradient(135deg, #0d2052 0%, #0a1840 60%, #071230 100%);
+  border-radius: 16px;
+  padding: 40px 36px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 32px;
+  flex-wrap: wrap;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: rgba(21, 101, 192, 0.15);
+  pointer-events: none;
+}
+
+.heroContent {
+  flex: 1;
+  min-width: 260px;
+}
+
+.heroBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(21, 101, 192, 0.2);
+  border: 1px solid rgba(21, 101, 192, 0.4);
+  color: #93c5fd;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+
+.heroTitle {
+  font-size: 32px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.8px;
+  margin-bottom: 10px;
+  line-height: 1.2;
+}
+
+.heroSubtitle {
+  font-size: 15px;
+  color: #93c5fd;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  max-width: 440px;
+}
+
+.heroBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--brand);
+  color: #fff;
+  padding: 12px 22px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  transition:
+    background 0.2s,
+    transform 0.15s;
+}
+
+.heroBtn:hover {
+  background: #1976d2;
+  transform: translateY(-1px);
+}
+
+.heroStats {
+  display: flex;
+  gap: 28px;
+}
+
+.heroStat {
+  text-align: center;
+}
+
+.heroStatValue {
+  font-size: 22px;
+  font-weight: 800;
+  color: #fff;
+}
+
+.heroStatLabel {
+  font-size: 12px;
+  color: #93c5fd;
+  margin-top: 2px;
+}
+
+/* Courses section */
+.coursesSection {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sectionTitle {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--fg);
+}
+
+.sectionSubtitle {
+  font-size: 13px;
+  color: var(--fg-3);
+  margin-top: 4px;
+}
+
+.courseGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.courseCard {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition:
+    border-color 0.15s,
+    transform 0.15s,
+    box-shadow 0.15s;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+}
+
+.courseCard:hover {
+  background: var(--bg-2);
+  border-color: var(--brand);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(21,101,192,0.12);
+}
+
+.courseIconWrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.courseHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.courseTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--fg);
+}
+
+.levelBadge {
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.courseDesc {
+  font-size: 13px;
+  color: var(--fg-3);
+  line-height: 1.5;
+}
+
+.courseMeta {
+  display: flex;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--fg-3);
+}
+
+.courseBtn {
+  display: block;
+  text-align: center;
+  padding: 9px 16px;
+  border-radius: 8px;
+  border: 1px solid;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: opacity 0.2s;
+  margin-top: auto;
+}
+
+.courseBtn:hover {
+  opacity: 0.8;
+}
+
+/* CTA Banner */
+.ctaBanner {
+  background: linear-gradient(135deg, var(--brand) 0%, var(--brand-hover) 100%);
+  border-radius: 16px;
+  padding: 36px;
+  text-align: center;
+}
+
+.ctaContent {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.ctaTitle {
+  font-size: 26px;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+.ctaSubtitle {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.75);
+  margin-bottom: 22px;
+}
+
+/* ── Responsive ──────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .hero {
+    padding: 28px 24px;
+    flex-direction: column;
+  }
+  .heroStats {
+    gap: 16px;
+  }
+  .heroTitle {
+    font-size: 24px;
+  }
+  .courseGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero {
+    padding: 22px 18px;
+  }
+  .heroTitle {
+    font-size: 20px;
+  }
+  .heroSubtitle {
+    font-size: 13.5px;
+  }
+  .heroStats {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .ctaBanner {
+    padding: 24px 18px;
+  }
+  .ctaTitle {
+    font-size: 20px;
+  }
+}

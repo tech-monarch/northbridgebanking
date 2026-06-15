@@ -1,0 +1,137 @@
+.root {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+/* ── Left branding panel ── */
+.panel {
+  background: linear-gradient(155deg, var(--bg) 0%, var(--bg-2) 50%, var(--bg) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.panel::before {
+  content: '';
+  position: absolute;
+  top: -120px;
+  left: -120px;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(30,136,229,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.panel::after {
+  content: '';
+  position: absolute;
+  bottom: -80px;
+  right: -80px;
+  width: 360px;
+  height: 360px;
+  background: radial-gradient(circle, var(--brand-glow) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.panelInner {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 40px 48px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--fg);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  margin-bottom: auto;
+}
+
+.panelContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 60px 0;
+}
+
+.panelTitle {
+  font-size: 36px;
+  font-weight: 800;
+  color: var(--fg);
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+  margin-bottom: 16px;
+}
+
+.panelSub {
+  font-size: 15px;
+  color: var(--fg-2);
+  line-height: 1.7;
+  margin-bottom: 40px;
+}
+
+.perks {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.perk {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--fg-2);
+}
+
+.perkCheck {
+  width: 22px;
+  height: 22px;
+  background: rgba(30,136,229,0.25);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.panelFooter {
+  font-size: 12px;
+  color: var(--fg-3);
+  margin-top: auto;
+  padding-top: 24px;
+}
+
+/* ── Right form panel ── */
+.form {
+  background: var(--bg-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  overflow-y: auto;
+}
+
+.formInner {
+  width: 100%;
+  max-width: 420px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .root {
+    grid-template-columns: 1fr;
+  }
+
+  .panel {
+    display: none;
+  }
+}
