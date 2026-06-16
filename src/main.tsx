@@ -6,14 +6,19 @@ import { AuthProvider } from '@/context/AuthContext';
 
 function Root() {
   useEffect(() => {
+    const existing = document.getElementById("jivo-script");
+
+    if (existing) return;
+
     const script = document.createElement("script");
-    script.src = "//code.jivosite.com/widget/qjVCSE8PoK";
+    script.id = "jivo-script";
+    script.src = "https://code.jivosite.com/widget/qjVCSE8PoK";
     script.async = true;
 
     document.body.appendChild(script);
 
     return () => {
-      document.body.removeChild(script);
+      script.remove();
     };
   }, []);
 
