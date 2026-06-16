@@ -87,7 +87,7 @@ export default function AdminLayout() {
             </div>
             <div>
               <span className={styles.logoText}>
-                <span className={styles.logoCoin}>Coin</span>
+                <span className={styles.logoCoin}>North</span>
                 <span className={styles.logoBridge}>Bridge</span>
               </span>
               <div className={styles.adminBadge}>Admin Panel</div>
