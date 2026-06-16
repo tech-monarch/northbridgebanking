@@ -9,7 +9,7 @@ interface AuthState {
 }
 
 interface AuthContextValue extends AuthState {
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<User>;
   register: (name: string, email: string, password: string, password_confirmation: string) => Promise<void>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
@@ -44,17 +44,56 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [refreshUser]);
 
-  const login = async (email: string, password: string) => {
-    setState((s) => ({ ...s, error: '', loading: true }));
-    try {
-      const data = await api.post<{ token: string; user: User }>('/auth/login', { email, password });
-      setToken(data.token);
-      setState({ user: data.user, token: data.token, loading: false, error: '' });
-    } catch (e) {
-      setState((s) => ({ ...s, loading: false, error: e instanceof Error ? e.message : 'Login failed' }));
-      throw e;
-    }
-  };
+  const login = async (
+  email: string,
+  password: string
+): Promise<User> => {
+
+  setState((s) => ({
+    ...s,
+    error: '',
+    loading: true
+  }));
+
+  try {
+
+    const data = await api.post<{ token: string; user: User }>(
+      '/auth/login',
+      {
+        email,
+        password
+      }
+    );
+
+
+    setToken(data.token);
+
+
+    setState({
+      user: data.user,
+      token: data.token,
+      loading: false,
+      error: ''
+    });
+
+
+    return data.user;
+
+
+  } catch (e) {
+
+    setState((s) => ({
+      ...s,
+      loading: false,
+      error:
+        e instanceof Error
+          ? e.message
+          : 'Login failed'
+    }));
+
+    throw e;
+  }
+};
 
   const register = async (name: string, email: string, password: string, password_confirmation: string) => {
     setState((s) => ({ ...s, error: '', loading: true }));
