@@ -12,14 +12,14 @@ type Step = 'method' | 'select' | 'amount' | 'details' | 'confirm' | 'processing
 const BANK_ACCOUNTS = [
   {
     id: 1,
-    bank_name: 'First Bank of Nigeria',
+    bank_name: 'Chase Bank',
     account_name: 'NorthBridge Finance Ltd',
     account_number: '3012345678',
     sort_code: '011',
   },
   {
     id: 2,
-    bank_name: 'GTBank',
+    bank_name: 'Deutsche Bank',
     account_name: 'NorthBridge Finance Ltd',
     account_number: '0123456789',
     sort_code: '058',
@@ -208,7 +208,7 @@ export default function DepositPage() {
                   <BankIcon />
                 </div>
                 <div className={styles.coinCardName}>Bank Transfer</div>
-                <div className={styles.coinCardSymbol}>NGN / USD</div>
+                <div className={styles.coinCardSymbol}>USD / EUR</div>
                 <div className={styles.coinCardNetwork} style={{ color: '#1565C0' }}>Instant · Free</div>
                 {method === 'bank_transfer' && (
                   <div className={styles.coinCheck} style={{ background: '#1565C0' }}>✓</div>
@@ -705,7 +705,7 @@ export default function DepositPage() {
         <div style={{ padding: '24px', height: '100%', display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#fff', marginBottom: '4px' }}>Funding Methods</h3>
           {[
-            { emoji: '🏦', title: 'Bank Transfer', lines: ['Transfer from any Nigerian bank', 'Credited within 1–2 business hours', 'No deposit fees', 'Minimum: $10'] },
+            { emoji: '🏦', title: 'Bank Transfer', lines: ['Transfer from any supported bank', 'Credited within 1–2 business hours', 'No deposit fees', 'Minimum: $10'] },
             { emoji: '₿', title: 'Cryptocurrency', lines: ['Supports BTC, ETH, USDT & more', 'Credited after network confirmations', 'Processing: 10–30 minutes', 'Minimum varies by coin'] },
           ].map((m) => (
             <div key={m.title} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '16px' }}>

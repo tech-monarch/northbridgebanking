@@ -1,6 +1,6 @@
 import styles from "./AcademyPage.module.css";
 
-const TELEGRAM_LINK = "https://t.me/North Bridge_official";
+const TELEGRAM_LINK = "https://t.me/northbridgebanking";
 
 const COURSES = [
   {

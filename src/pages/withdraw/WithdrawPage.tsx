@@ -19,30 +19,21 @@ const COIN_ICONS: Record<string, string> = {
   TRX: "⚡",
 };
 
-const NIGERIAN_BANKS = [
-  "Access Bank",
-  "First Bank",
-  "GTBank (Guaranty Trust)",
-  "UBA",
-  "Zenith Bank",
-  "Fidelity Bank",
-  "FCMB",
-  "Sterling Bank",
-  "Wema Bank",
-  "Union Bank",
-  "Polaris Bank",
-  "Ecobank",
-  "Heritage Bank",
-  "Keystone Bank",
-  "Stanbic IBTC",
-  "Standard Chartered",
+const SUPPORTED_BANKS = [
+  "Chase Bank",
+  "Bank of America",
+  "Wells Fargo",
   "Citibank",
-  "Jaiz Bank",
-  "Providus Bank",
-  "Kuda Bank",
-  "Opay",
-  "PalmPay",
-  "Moniepoint",
+  "HSBC",
+  "Barclays",
+  "Standard Chartered",
+  "Deutsche Bank",
+  "BNP Paribas",
+  "Santander",
+  "Revolut",
+  "Wise",
+  "N26",
+  "Monzo",
   "Other",
 ];
 
@@ -345,7 +336,7 @@ export default function WithdrawPage() {
                 </div>
                 <div className={styles.coinCardName}>Bank Transfer</div>
                 <div className={styles.coinCardSymbol}>
-                  To any Nigerian bank
+                  To any supported bank
                 </div>
                 <div
                   className={styles.coinCardBalance}
@@ -489,7 +480,7 @@ export default function WithdrawPage() {
                   <option value="" style={{ color: "#000" }}>
                     Select bank…
                   </option>
-                  {NIGERIAN_BANKS.map((b) => (
+                  {SUPPORTED_BANKS.map((b) => (
                     <option key={b} value={b} style={{ color: "#000" }}>
                       {b}
                     </option>
@@ -1213,7 +1204,7 @@ export default function WithdrawPage() {
               emoji: "🏦",
               title: "Bank Transfer",
               lines: [
-                "Supports all Nigerian banks",
+                "Supports all major banks",
                 "Credited in 1–24 business hours",
                 "Minimum: $10",
                 "KYC required",

@@ -78,9 +78,9 @@ function FintechIllustration() {
       {/* Phone body */}
       <rect x="30" y="4" width="36" height="62" rx="5" fill="#1a3a6e" />
       <rect x="33" y="10" width="30" height="44" rx="2" fill="#0d2052" />
-      {/* Screen content - NGN symbol and balance */}
+      {/* Screen content - USD symbol and balance */}
       <text x="38" y="28" fontSize="8" fill="#9ca3af" fontFamily="Arial">Balance</text>
-      <text x="36" y="40" fontSize="9" fontWeight="700" fill="#22c55e" fontFamily="Arial">₦1,520,000</text>
+      <text x="36" y="40" fontSize="9" fontWeight="700" fill="#22c55e" fontFamily="Arial">$15,200.00</text>
       {/* Mini bar chart */}
       <rect x="37" y="46" width="4" height="6" rx="1" fill="#1565C0" opacity="0.7"/>
       <rect x="43" y="43" width="4" height="9" rx="1" fill="#1565C0" opacity="0.85"/>
@@ -92,9 +92,9 @@ function FintechIllustration() {
       <rect x="4" y="44" width="22" height="14" rx="3" fill="#1565C0" />
       <rect x="7" y="48" width="8" height="5" rx="1" fill="#f59e0b" opacity="0.9"/>
       <line x1="7" y1="55" x2="23" y2="55" stroke="rgba(255,255,255,0.3)" strokeWidth="1"/>
-      {/* Naira coins right */}
+      {/* Currency coin right */}
       <circle cx="92" cy="42" r="10" fill="#22c55e" />
-      <text x="86" y="47" fontSize="11" fontWeight="800" fill="white" fontFamily="Arial">₦</text>
+      <text x="86" y="47" fontSize="11" fontWeight="800" fill="white" fontFamily="Arial">$</text>
       {/* Upward arrow trend */}
       <polyline points="80,68 87,58 94,62 101,50 108,46" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" fill="none"/>
       <circle cx="108" cy="46" r="2.5" fill="#22c55e"/>

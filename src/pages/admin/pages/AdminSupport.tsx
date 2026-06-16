@@ -11,7 +11,7 @@ interface Ticket {
   reply?: string;
 }
 
-const TELEGRAM_LINK = "https://t.me/North Bridge_official";
+const TELEGRAM_LINK = "https://t.me/northbridgebanking";
 
 export default function AdminSupport() {
   const [tickets, setTickets] = useState<Ticket[]>([]);

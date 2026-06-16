@@ -3,7 +3,7 @@ import styles from "./SupportPage.module.css";
 import { useAuth } from "@/context/AuthContext";
 import api from "@/services/api";
 
-const TELEGRAM_LINK = "https://t.me/North Bridge_official";
+const TELEGRAM_LINK = "https://t.me/northbridgebanking";
 
 const FAQS = [
   {
@@ -183,7 +183,7 @@ export default function SupportPage() {
             </div>
             <div>
               <div className={styles.contactPlatform}>Telegram Community</div>
-              <div className={styles.contactHandle}>@North Bridge_official</div>
+              <div className={styles.contactHandle}>@northbridgebanking</div>
             </div>
           </div>
           <p className={styles.contactDesc}>

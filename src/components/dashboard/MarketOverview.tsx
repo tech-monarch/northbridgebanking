@@ -12,12 +12,11 @@ interface RateItem {
 }
 
 const RATES: RateItem[] = [
-  { flag: '🇺🇸', pair: 'USD/NGN', name: 'US Dollar', rate: '₦1,520.00', change: 0.42, color: '#22c55e' },
-  { flag: '🇬🇧', pair: 'GBP/NGN', name: 'British Pound', rate: '₦1,930.50', change: -0.18, color: '#1565C0' },
-  { flag: '🇪🇺', pair: 'EUR/NGN', name: 'Euro', rate: '₦1,655.20', change: 0.31, color: '#f59e0b' },
-  { flag: '🇨🇦', pair: 'CAD/NGN', name: 'Canadian Dollar', rate: '₦1,110.75', change: -0.09, color: '#ef4444' },
-  { flag: '🇦🇺', pair: 'AUD/NGN', name: 'Australian Dollar', rate: '₦975.40', change: 0.57, color: '#9945ff' },
-  { flag: '🇨🇭', pair: 'CHF/NGN', name: 'Swiss Franc', rate: '₦1,700.00', change: 0.12, color: '#26a17b' },
+  { flag: '🇪🇺', pair: 'EUR/USD', name: 'Euro', rate: '$1.0820', change: 0.31, color: '#f59e0b' },
+  { flag: '🇬🇧', pair: 'GBP/USD', name: 'British Pound', rate: '$1.2700', change: -0.18, color: '#1565C0' },
+  { flag: '🇨🇦', pair: 'CAD/USD', name: 'Canadian Dollar', rate: '$0.7300', change: -0.09, color: '#ef4444' },
+  { flag: '🇦🇺', pair: 'AUD/USD', name: 'Australian Dollar', rate: '$0.6600', change: 0.57, color: '#9945ff' },
+  { flag: '🇨🇭', pair: 'CHF/USD', name: 'Swiss Franc', rate: '$1.1300', change: 0.12, color: '#26a17b' },
 ];
 
 function MiniBar({ positive }: { positive: boolean }) {
@@ -48,7 +47,7 @@ export default function MarketOverview() {
       <div className={styles.table}>
         <div className={styles.tableHead}>
           <span>Currency</span>
-          <span>NGN Rate</span>
+          <span>USD Rate</span>
           <span>24h</span>
           <span>Source</span>
           <span>Trend</span>
@@ -72,7 +71,7 @@ export default function MarketOverview() {
               <div className={`${styles.changeCell} ${positive ? styles.positive : styles.negative}`}>
                 {positive ? '▲' : '▼'} {Math.abs(item.change).toFixed(2)}%
               </div>
-              <div className={styles.capCell} style={{ fontSize: '11px', color: '#9ca3af' }}>CBN / NFEX</div>
+              <div className={styles.capCell} style={{ fontSize: '11px', color: '#9ca3af' }}>Open Market</div>
               <div className={styles.sparkCell}>
                 <MiniBar positive={positive} />
               </div>
