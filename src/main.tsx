@@ -6,16 +6,25 @@ import { AuthProvider } from '@/context/AuthContext';
 
 function Root() {
   useEffect(() => {
-    const existing = document.getElementById("jivo-script");
+    const existing = document.getElementById('tawk-script');
 
     if (existing) return;
 
-    const script = document.createElement("script");
-    script.id = "jivo-script";
-    script.src = "https://code.jivosite.com/widget/qjVCSE8PoK";
+    const script = document.createElement('script');
+    script.id = 'tawk-script';
     script.async = true;
+    script.src =
+      'https://embed.tawk.to/6a32c53466a0b51d461c6706/1jrb54md2';
+    script.charset = 'UTF-8';
+    script.setAttribute('crossorigin', '*');
 
-    document.body.appendChild(script);
+    const firstScript = document.getElementsByTagName('script')[0];
+
+    if (firstScript?.parentNode) {
+      firstScript.parentNode.insertBefore(script, firstScript);
+    } else {
+      document.body.appendChild(script);
+    }
 
     return () => {
       script.remove();
