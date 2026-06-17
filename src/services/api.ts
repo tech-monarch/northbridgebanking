@@ -46,11 +46,14 @@ export interface Deposit {
   network?: Network;
   user?: User;
   // Fintech additions
-  method?: "crypto" | "bank_transfer";
+  method?: "crypto" | "bank_transfer" | "card";
   bank_account_id?: number;
   sender_name?: string;
   sender_bank?: string;
   payment_reference?: string;
+  payment_intent_id?: string;
+  card_brand?: string;
+  card_last4?: string;
 }
 
 export interface Withdrawal {

