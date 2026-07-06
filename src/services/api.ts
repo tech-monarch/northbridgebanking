@@ -169,11 +169,17 @@ export function clearToken(): void {
   localStorage.removeItem("coinbridge_token");
 }
 
+// Identifies this frontend to the shared Laravel API so it knows which
+// database connection to use (mysql for Northbridge, client_mysql for
+// Altioda). See DetectTenantConnection middleware on the backend.
+const APP_IDENTIFIER = "northbridge";
+
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const token = getToken();
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
     Accept: "application/json",
+    "X-App": APP_IDENTIFIER,
     ...((options.headers as Record<string, string>) || {}),
   };
   if (token) {
@@ -198,7 +204,10 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
 
 async function uploadForm<T>(path: string, formData: FormData): Promise<T> {
   const token = getToken();
-  const headers: Record<string, string> = { Accept: "application/json" };
+  const headers: Record<string, string> = {
+    Accept: "application/json",
+    "X-App": APP_IDENTIFIER,
+  };
   if (token) headers["Authorization"] = `Bearer ${token}`;
 
   const res = await fetch(`${BASE_URL}${path}`, {
